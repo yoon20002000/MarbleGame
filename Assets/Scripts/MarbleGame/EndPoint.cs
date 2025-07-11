@@ -7,8 +7,6 @@ public class EndPoint : MonoBehaviour
     [SerializeField]
     private BoxCollider2D boxCollider;
 
-    [SerializeField]
-    private LayerMask triggerLayerMask;
     private void Awake()
     {
         if (boxCollider == null)
@@ -22,11 +20,8 @@ public class EndPoint : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.layer != triggerLayerMask)
-        {
-            return;
-        }
+        Debug.Log(gameObject.name + " entered");
     }
 }

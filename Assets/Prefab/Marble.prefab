@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 9138565683342204354}
   - component: {fileID: 6845661725825223567}
   - component: {fileID: 3989502289458140629}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Marble
   m_TagString: Untagged
   m_Icon: {fileID: 0}

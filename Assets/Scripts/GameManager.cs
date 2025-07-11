@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using ChzzAPI;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Events;
 
 public class GameManager : MonoBehaviour
 {
@@ -19,6 +20,8 @@ public class GameManager : MonoBehaviour
     private List<DonationData> errorDonations = new List<DonationData>(100);
 
     private bool isRacing = false;
+    
+    public UnityEvent<bool> OnRacingStateChanged = new UnityEvent<bool>();
     
     private void Awake()
     {
@@ -98,8 +101,11 @@ public class GameManager : MonoBehaviour
 
         if (marbleManager.MarbleCount == 1)
         {
+            isRacing = false;
+            OnRacingStateChanged.Invoke(isRacing);
             // Race End
             // 승자 연출
+            // 게임 종료 시 MarbleDatas를 이용해서 다시 재 생ㅅ어하는 로직
         }
     }
 
@@ -130,5 +136,35 @@ public class GameManager : MonoBehaviour
         }
         
         isRacing = true;
+        OnRacingStateChanged.Invoke(isRacing);
+        marbleManager.SetAllMarbleSimulate(isRacing);
+    }
+
+    public void StopRace()
+    {
+        if (!isRacing)
+        {
+            return;
+        }
+
+        isRacing = false;
+        OnRacingStateChanged.Invoke(isRacing);
+        marbleManager.ResetMarblesPosition();
+        marbleManager.SetAllMarbleSimulate(isRacing);
+    }
+
+    public void AddMarble(string marbleName, int marbleCount)
+    {
+        marbleManager.AddMarbleData(marbleName, "수동", false, marbleCount * 1000, "수동");
+    }
+
+    public void RemoveMarble(string marbleName, int marbleCount)
+    {
+        marbleManager.RemoveMarble(marbleName, marbleCount);
+    }
+
+    public void RemoveAllMarbles()
+    {
+        
     }
 }
