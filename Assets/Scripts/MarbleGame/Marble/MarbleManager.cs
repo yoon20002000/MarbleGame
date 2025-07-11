@@ -6,6 +6,7 @@ public class MarbleManager : MonoBehaviour
 {
     private List<Marble> marbles = new List<Marble>();
     public IReadOnlyList<Marble> Marbles => marbles;
+    public int MarbleCount => marbles.Count;
 
     [SerializeField]
     private Transform marbleSpawnPoint;

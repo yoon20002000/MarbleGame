@@ -17,8 +17,12 @@ public class GameManager : MonoBehaviour
     private const string GAME_AGGREGATION_COMMAND = "[구슬]";
     
     private List<DonationData> errorDonations = new List<DonationData>(100);
+
+    private bool isRacing = false;
+    
     private void Awake()
     {
+        isRacing = false;
         if (marbleManager == null)
         {
             marbleManager = FindFirstObjectByType<MarbleManager>();
@@ -83,6 +87,22 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void EnterEndPoint(Marble marble)
+    {
+        if (!isRacing)
+        {
+            return;
+        }
+        
+        marbleManager.RemoveMarble(marble);
+
+        if (marbleManager.MarbleCount == 1)
+        {
+            // Race End
+            // 승자 연출
+        }
+    }
+
     private bool IsAggregation(string msg)
     {
         return !string.IsNullOrEmpty(msg) && msg.Contains(GAME_AGGREGATION_COMMAND);
@@ -100,5 +120,15 @@ public class GameManager : MonoBehaviour
     private void ResetErrorDonations()
     {
         errorDonations.Clear();
+    }
+
+    public void StartRace()
+    {
+        if (isRacing)
+        {
+            return;
+        }
+        
+        isRacing = true;
     }
 }
