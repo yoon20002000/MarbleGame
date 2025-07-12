@@ -1,11 +1,10 @@
-using System;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
 
-public class MarbleDataInput : MonoBehaviour
+public class UI_MarbleDataInput : MonoBehaviour
 {
    [SerializeField]
    private GameManager gameManager;

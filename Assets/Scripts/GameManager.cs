@@ -3,6 +3,7 @@ using ChzzAPI;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
@@ -19,13 +20,13 @@ public class GameManager : MonoBehaviour
     
     private List<DonationData> errorDonations = new List<DonationData>(100);
 
-    private bool isRacing = false;
+    public bool IsRacing { get; private set; } = false;
     
     public UnityEvent<bool> OnRacingStateChanged = new UnityEvent<bool>();
     
     private void Awake()
     {
-        isRacing = false;
+        IsRacing = false;
         if (marbleManager == null)
         {
             marbleManager = FindFirstObjectByType<MarbleManager>();
@@ -90,9 +91,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void EnterEndPoint(Marble marble)
+    public void EnterEndPoint(Marble marble)
     {
-        if (!isRacing)
+        if (!IsRacing)
         {
             return;
         }
@@ -101,11 +102,14 @@ public class GameManager : MonoBehaviour
 
         if (marbleManager.MarbleCount == 1)
         {
-            isRacing = false;
-            OnRacingStateChanged.Invoke(isRacing);
+            IsRacing = false;
+            OnRacingStateChanged.Invoke(IsRacing);
             // Race End
             // 승자 연출
-            // 게임 종료 시 MarbleDatas를 이용해서 다시 재 생ㅅ어하는 로직
+            // 게임 종료 시 MarbleDatas를 이용해서 다시 재 생성하는 로직을
+            // 승자 Popup 닫았을 때 호출 할 수 있도록 OnClick Close 에 바인드 할 것
+            
+            Debug.Log("Winner : " + marble.MarbleData.MarbleName);
         }
     }
 
@@ -130,27 +134,30 @@ public class GameManager : MonoBehaviour
 
     public void StartRace()
     {
-        if (isRacing)
+        if (IsRacing)
         {
             return;
         }
         
-        isRacing = true;
-        OnRacingStateChanged.Invoke(isRacing);
-        marbleManager.SetAllMarbleSimulate(isRacing);
+        IsRacing = true;
+        OnRacingStateChanged.Invoke(IsRacing);
+        marbleManager.SetAllMarbleSimulate(IsRacing);
+        
+        Debug.Log("레이스 시작!");
     }
 
     public void StopRace()
     {
-        if (!isRacing)
+        if (!IsRacing)
         {
             return;
         }
 
-        isRacing = false;
-        OnRacingStateChanged.Invoke(isRacing);
+        IsRacing = false;
+        OnRacingStateChanged.Invoke(IsRacing);
         marbleManager.ResetMarblesPosition();
-        marbleManager.SetAllMarbleSimulate(isRacing);
+        marbleManager.SetAllMarbleSimulate(IsRacing);
+        Debug.Log("레이스 종료!");
     }
 
     public void AddMarble(string marbleName, int marbleCount)
@@ -160,11 +167,22 @@ public class GameManager : MonoBehaviour
 
     public void RemoveMarble(string marbleName, int marbleCount)
     {
-        marbleManager.RemoveMarble(marbleName, marbleCount);
+        marbleManager.RemoveMarble(marbleName, marbleCount, IsRacing);
+    }
+
+    public void RemoveMarble(GameObject marbleGameObject)
+    {
+        Marble marble = marbleGameObject.GetComponent<Marble>();
+        if (marble == null)
+        {
+            return;
+        }
+        marbleManager.RemoveMarble(marble);
     }
 
     public void RemoveAllMarbles()
     {
-        
+        marbleManager.RemoveAllMarbles();
+        marbleManager.RemoveAllMarblesData();
     }
 }

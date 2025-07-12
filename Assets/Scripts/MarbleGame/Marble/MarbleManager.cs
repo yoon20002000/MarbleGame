@@ -7,8 +7,9 @@ using Assert = UnityEngine.Assertions.Assert;
 public class MarbleManager : MonoBehaviour
 {
     private List<Marble> marbles = new List<Marble>();
-    private List<MarbleData> marbleDatas = new List<MarbleData>();
     public IReadOnlyList<Marble> Marbles => marbles;
+    private List<MarbleData> marblesData = new List<MarbleData>();
+    public IReadOnlyList<MarbleData> MarblesData => marblesData;
     public int MarbleCount => marbles.Count;
 
     [SerializeField]
@@ -57,7 +58,7 @@ public class MarbleManager : MonoBehaviour
         {
             MarbleData marbleData = new MarbleData(marbles.Count, marbleName, GetRandomColor(),
                 new DonationData(isAnonymous, donor, donationAmount, msg));
-            marbleDatas.Add(marbleData);
+            marblesData.Add(marbleData);
             AddMarble(marbleData);    
         }
         
@@ -70,14 +71,17 @@ public class MarbleManager : MonoBehaviour
         return marble;
     }
 
-    public void RemoveMarble(Marble marble)
+    public void RemoveMarble(Marble marble, bool bIsRacing = true)
     {
         marbles.Remove(marble);
         marblePool.Release(marble);
-        UpdateAllMarblesPosition();
+        if (!bIsRacing)
+        {
+            UpdateAllMarblesPosition();    
+        }
     }
 
-    public void RemoveMarble(string marbleName, int marbleCount)
+    public void RemoveMarble(string marbleName, int marbleCount, bool bIsRacing = true)
     {
         int index = Mathf.Min(marbleCount - 1, marbles.Count - 1);
         for ( ; index >= 0; --index)
@@ -89,7 +93,10 @@ public class MarbleManager : MonoBehaviour
                 marblePool.Release(removeMarble);
             }
         }
-        UpdateAllMarblesPosition();
+        if (!bIsRacing)
+        {
+            UpdateAllMarblesPosition();    
+        }
     }
 
     public void RemoveAllMarbles()
@@ -99,6 +106,11 @@ public class MarbleManager : MonoBehaviour
         {
             marblePool.Release(marbles[i]);
         }
+    }
+
+    public void RemoveAllMarblesData()
+    {
+        marblesData.Clear();
     }
 
     public void ResetMarblesPosition()
