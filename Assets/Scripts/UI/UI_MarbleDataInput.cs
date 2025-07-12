@@ -35,7 +35,7 @@ public class UI_MarbleDataInput : MonoBehaviour
          }
       }
       
-      gameManager.OnRacingStateChanged.AddListener(OnRacingStateChanged);
+      gameManager.OnGameStateChanged.AddListener(OnRacingStateChanged);
       
       addMarbleButton.onClick.AddListener(OnClickAddMarbleButton);
       removeMarbleButton.onClick.AddListener(OnClickRemoveMarbleButton);
@@ -59,10 +59,12 @@ public class UI_MarbleDataInput : MonoBehaviour
       
    }
 
-   private void OnRacingStateChanged(bool isRacing)
+   private void OnRacingStateChanged(GameManager.EGameState gameState)
    {
-      addMarbleButton.interactable = !isRacing;
-      removeMarbleButton.interactable = !isRacing;
-      resetMarbleButton.interactable = !isRacing;
+      bool isUIInteractable =
+         gameState != GameManager.EGameState.Racing && gameState != GameManager.EGameState.RacingEnd;
+      addMarbleButton.interactable = isUIInteractable;
+      removeMarbleButton.interactable = isUIInteractable;
+      resetMarbleButton.interactable = isUIInteractable;
    }
 }

@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.UI;
 
 public class UI_MainLayout : MonoBehaviour
@@ -16,8 +17,14 @@ public class UI_MainLayout : MonoBehaviour
     
     private void Awake()
     {
+        
+        Assert.IsNotNull(gameManager, "Game manager is null.");
+        
+        gameManager.OnGameStateChanged.AddListener(OnGameStateChanged);
         raceStateChangeButton.onValueChanged.AddListener(OnRacingStateValueChanged);
     }
+
+    
 
     private void OnRacingStateValueChanged(bool isOn)
     {
@@ -30,6 +37,10 @@ public class UI_MainLayout : MonoBehaviour
         {
             gameManager.StopRace();    
         }
+    }
+    private void OnGameStateChanged(GameManager.EGameState eGameState)
+    {
+        raceStateChangeButton.interactable = gameManager.IsRacingStartAble; 
     }
 
     private void UpdateRaceButton(bool isOn)

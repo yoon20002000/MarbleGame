@@ -20,13 +20,37 @@ public class GameManager : MonoBehaviour
     
     private List<DonationData> errorDonations = new List<DonationData>(100);
 
-    public bool IsRacing { get; private set; } = false;
+    public bool IsRacing => eGameState == EGameState.Racing;
+    public bool IsRacingStartAble => eGameState == EGameState.Idle && marbleManager.MarbleCount > 1;
+    public enum EGameState
+    {
+        Idle = 0,
+        Aggregation = 1,
+        Racing = 2,
+        RacingEnd = 3,
+    }
+
+    public EGameState GameState
+    {
+        get
+        {
+            return eGameState;
+        }
+        
+        private set
+        {
+            eGameState = value;
+            OnGameStateChanged?.Invoke(eGameState);
+        }
+    } 
+
+    private EGameState eGameState = EGameState.Idle;
+    [HideInInspector]
+    public UnityEvent<EGameState> OnGameStateChanged = new UnityEvent<EGameState>();
     
-    public UnityEvent<bool> OnRacingStateChanged = new UnityEvent<bool>();
     
     private void Awake()
     {
-        IsRacing = false;
         if (marbleManager == null)
         {
             marbleManager = FindFirstObjectByType<MarbleManager>();
@@ -102,8 +126,8 @@ public class GameManager : MonoBehaviour
 
         if (marbleManager.MarbleCount == 1)
         {
-            IsRacing = false;
-            OnRacingStateChanged.Invoke(IsRacing);
+            GameState = EGameState.RacingEnd;
+            
             // Race End
             // 승자 연출
             // 게임 종료 시 MarbleDatas를 이용해서 다시 재 생성하는 로직을
@@ -138,9 +162,7 @@ public class GameManager : MonoBehaviour
         {
             return;
         }
-        
-        IsRacing = true;
-        OnRacingStateChanged.Invoke(IsRacing);
+        GameState = EGameState.Racing;
         marbleManager.SetAllMarbleSimulate(IsRacing);
         
         Debug.Log("레이스 시작!");
@@ -152,12 +174,11 @@ public class GameManager : MonoBehaviour
         {
             return;
         }
-
-        IsRacing = false;
-        OnRacingStateChanged.Invoke(IsRacing);
+        
+        GameState = EGameState.Idle;
         marbleManager.ResetMarblesPosition();
         marbleManager.SetAllMarbleSimulate(IsRacing);
-        Debug.Log("레이스 종료!");
+        Debug.Log("레이스 강제 종료!");
     }
 
     public void AddMarble(string marbleName, int marbleCount)
