@@ -71,50 +71,89 @@ public class GameManager : MonoBehaviour
 
     private void OnOpen()
     {
-        
+        Debug.Log("OnOpen");
+        UnityMainThreadDispatcher.Instance.Enqueue(
+            () =>
+            {
+                GameState = EGameState.Aggregation;
+            });
     }
 
     private void OnClose()
     {
-        
+        Debug.Log("OnClose");
+        UnityMainThreadDispatcher.Instance.Enqueue(
+            () =>
+            {
+                GameState = EGameState.Idle;
+            });
     }
 
     private void OnMessage(Profile profile, string msg)
     {
-        // for test
+        UnityMainThreadDispatcher.Instance.Enqueue(() =>
+        {
+            if (!IsAggregation(msg))
+            {
+                return;
+            }
+        
+            int firstQuote = msg.IndexOf('"');
+            int secondQuote = msg.IndexOf('"', firstQuote + 1);
+
+            if (firstQuote != -1 && secondQuote != -1)
+            {
+                // 도네이션 자
+                string donor = profile.nickname;
+                // 구슬 이름
+                string marbleName = msg.Substring(firstQuote + 1, secondQuote - firstQuote - 1);
+            
+                marbleManager.AddMarbleData(marbleName, donor, true, 1000, msg);
+                Debug.Log($"구슬 추가 : 구슬 이름 {marbleName}, 생성자 {donor}");
+            }
+            else
+            {
+                AddErrorDonation(new DonationData(true, profile.nickname, 1000, msg));
+                Debug.LogWarning($"큰따옴표가 없습니다. : {msg}");
+                return;
+            }
+        });
     }
 
     private void OnDonation(Profile profile, string msg, DonationExtras donation)
     {
-        if (!IsAggregation(msg))
+        UnityMainThreadDispatcher.Instance.Enqueue(() =>
         {
-            return;
-        }
+            if (!IsAggregation(msg))
+            {
+                return;
+            }
         
-        int firstQuote = msg.IndexOf('"');
-        int secondQuote = msg.IndexOf('"', firstQuote + 1);
+            int firstQuote = msg.IndexOf('"');
+            int secondQuote = msg.IndexOf('"', firstQuote + 1);
 
-        if (firstQuote != -1 && secondQuote != -1)
-        {
-            // 도네이션 자
-            string donor = profile.nickname;
-            // 도네 금액
-            int donationAmount = donation.payAmount;
-            // 익명 여부
-            bool isAnonymous = donation.isAnonymous;
-            // 구슬 이름
-            string marbleName = msg.Substring(firstQuote + 1, secondQuote - firstQuote - 1);
+            if (firstQuote != -1 && secondQuote != -1)
+            {
+                // 도네이션 자
+                string donor = profile.nickname;
+                // 도네 금액
+                int donationAmount = donation.payAmount;
+                // 익명 여부
+                bool isAnonymous = donation.isAnonymous;
+                // 구슬 이름
+                string marbleName = msg.Substring(firstQuote + 1, secondQuote - firstQuote - 1);
             
-            marbleManager.AddMarbleData(marbleName, donor, isAnonymous, donationAmount, msg);
-        }
-        else
-        {
-            AddErrorDonation(new DonationData(donation.isAnonymous, profile.nickname, donation.payAmount, msg));
-            Debug.LogWarning($"큰따옴표가 없습니다. : {msg}");
-            return;
-        }
+                marbleManager.AddMarbleData(marbleName, donor, isAnonymous, donationAmount, msg);
+            }
+            else
+            {
+                AddErrorDonation(new DonationData(donation.isAnonymous, profile.nickname, donation.payAmount, msg));
+                Debug.LogWarning($"큰따옴표가 없습니다. : {msg}");
+                return;
+            }
+        });
     }
-
+    
     public void EnterEndPoint(Marble marble)
     {
         if (!IsRacing)
@@ -205,5 +244,15 @@ public class GameManager : MonoBehaviour
     {
         marbleManager.RemoveAllMarbles();
         marbleManager.RemoveAllMarblesData();
+    }
+
+    public void StartAggregation(string channelID)
+    {
+        chzzkUnity.Connect(channelID);
+    }
+
+    public void StopAggregation()
+    {
+        chzzkUnity.StopListening();
     }
 }
