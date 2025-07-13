@@ -42,7 +42,7 @@ public class Marble : MonoBehaviour
     {
         if (marbleManager != null)
         {
-            marbleManager.RemoveMarble(this);    
+            marbleManager.ForceRemoveMarble(this);    
         }
     }
 

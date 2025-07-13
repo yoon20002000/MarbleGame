@@ -1,8 +1,11 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Pool;
 using Assert = UnityEngine.Assertions.Assert;
+using Random = UnityEngine.Random;
 
 public class MarbleManager : MonoBehaviour
 {
@@ -52,6 +55,11 @@ public class MarbleManager : MonoBehaviour
             defaultCapacity: 10);
     }
 
+    private void OnDestroy()
+    {
+        RemoveAllMarblesData();
+    }
+
     public void AddMarbleData(string marbleName, string donor, bool isAnonymous, int  donationAmount, string msg)
     {
         for (int i = 0; i < donationAmount / donationPerAmount; ++i)
@@ -61,7 +69,6 @@ public class MarbleManager : MonoBehaviour
             marblesData.Add(marbleData);
             AddMarble(marbleData);    
         }
-        
     }
     public Marble AddMarble(MarbleData marbleData)
     {
@@ -71,10 +78,15 @@ public class MarbleManager : MonoBehaviour
         return marble;
     }
 
-    public void RemoveMarble(Marble marble, bool bIsRacing = true)
+    public void ForceRemoveMarble(Marble marble)
     {
         marbles.Remove(marble);
         marblePool.Release(marble);
+    }
+    public void RemoveMarble(Marble marble, bool bIsRacing = true)
+    {
+        marbles.Remove(marble);
+        StartCoroutine(ReleaseAfterSeconds(marble, 3.0f));
         if (!bIsRacing)
         {
             UpdateAllMarblesPosition();    
@@ -101,6 +113,7 @@ public class MarbleManager : MonoBehaviour
 
     public void RemoveAllMarbles()
     {
+        StopAllMarbleManagerCoroutines();
         marbles.Clear();
         for (int i = marbles.Count - 1; i >= 0; --i)
         {
@@ -110,6 +123,7 @@ public class MarbleManager : MonoBehaviour
 
     public void RemoveAllMarblesData()
     {
+        RemoveAllMarbles();
         marblesData.Clear();
     }
 
@@ -139,5 +153,24 @@ public class MarbleManager : MonoBehaviour
         {
             marbles[i].transform.localPosition = spawnPointManager.GetSpawnLocalPosition(i);
         }
+    }
+
+    private IEnumerator ReleaseAfterSeconds(Marble marble, float sec)
+    {
+        yield return Awaitable.WaitForSecondsAsync(sec);
+        
+        marblePool.Release(marble);
+    }
+
+    public void ResetMarbleManagerState()
+    {
+        StopAllCoroutines();
+        RemoveAllMarbles();
+        RemoveAllMarblesData();
+    }
+    
+    public void StopAllMarbleManagerCoroutines()
+    {
+        StopAllCoroutines();
     }
 }
