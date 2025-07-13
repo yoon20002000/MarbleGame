@@ -22,6 +22,7 @@ public class UI_MainLayout : MonoBehaviour
         
         gameManager.OnGameStateChanged.AddListener(OnGameStateChanged);
         raceStateChangeButton.onValueChanged.AddListener(OnRacingStateValueChanged);
+        OnGameStateChanged(gameManager.GameState);
     }
 
     private void OnRacingStateValueChanged(bool isOn)
@@ -55,13 +56,9 @@ public class UI_MainLayout : MonoBehaviour
             switch (eGameState)
             {
                 case GameManager.EGameState.Idle:
-                {
-                    raceButtonText = "레이스 시작!";
-                    break;
-                }
                 case GameManager.EGameState.Aggregation:
                 {
-                    raceButtonText = "레이스 준비 중...";
+                    raceButtonText = "레이스\n준비 중...";
                     break;
                 }
                 case GameManager.EGameState.Racing:
