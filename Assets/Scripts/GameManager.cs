@@ -47,7 +47,8 @@ public class GameManager : MonoBehaviour
     private EGameState eGameState = EGameState.Idle;
     [HideInInspector]
     public UnityEvent<EGameState> OnGameStateChanged = new UnityEvent<EGameState>();
-    
+    [HideInInspector]
+    public UnityEvent<Marble> OnGameEnded = new UnityEvent<Marble>();
     
     private void Awake()
     {
@@ -167,6 +168,7 @@ public class GameManager : MonoBehaviour
         {
             GameState = EGameState.RacingEnd;
             
+            OnGameEnded?.Invoke(marble);
             // Race End
             // 승자 연출
             // 게임 종료 시 MarbleDatas를 이용해서 다시 재 생성하는 로직을
