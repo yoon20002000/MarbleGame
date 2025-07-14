@@ -56,7 +56,7 @@ public class UI_RacingResult : MonoBehaviour
     private void OnGameEnded(Marble marble)
     {
         SetActiveUI(true);
-        DonationData donationData = marble.MarbleData.DonationData;
+        DonationData donationData = marble.DonationData;
         string winnerName = donationData.IsAnonymous ? ANONYMOUS_NAME : donationData.Donor;
         string winnerMarbleName = marble.MarbleData.MarbleName;
         winnerNameText.SetText(winnerName);

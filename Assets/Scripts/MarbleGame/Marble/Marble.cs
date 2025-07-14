@@ -9,6 +9,8 @@ public class Marble : MonoBehaviour
     private MarbleManager marbleManager;
     [HideInInspector]
     public MarbleData MarbleData { get; private set; }
+
+    public DonationData DonationData => MarbleData.DonationData;
     public Rigidbody2D MarbleRigidbody { get; private set; }
     [SerializeField]
     private SpriteRenderer spriteRenderer;
