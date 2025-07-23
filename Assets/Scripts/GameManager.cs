@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
     
     [SerializeField]
     private DonationManager donationManager;
+    [SerializeField]
+    private TimeManager timeManager;
 
     private const string GAME_AGGREGATION_COMMAND = "[구슬]";
     
@@ -169,9 +171,9 @@ public class GameManager : MonoBehaviour
             GameState = EGameState.RacingEnd;
             
             OnGameEnded?.Invoke(marble);
+            marbleManager.AddAllMarblesByMarbleData();
             // Race End
             // 승자 연출
-            // 게임 종료 시 MarbleDatas를 이용해서 다시 재 생성하는 로직을
             // 승자 Popup 닫았을 때 호출 할 수 있도록 OnClick Close 에 바인드 할 것
             
             Debug.Log("Winner : " + marble.MarbleData.MarbleName);

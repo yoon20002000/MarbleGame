@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Pool;
+using UnityEngine.Serialization;
 using Assert = UnityEngine.Assertions.Assert;
 using Random = UnityEngine.Random;
 
@@ -26,6 +29,17 @@ public class MarbleManager : MonoBehaviour
 
     [SerializeField] 
     private float donationPerAmount = 1000;
+
+    [HideInInspector]
+    public UnityEvent<Marble> OnMarbleAdded = new UnityEvent<Marble>();
+    [HideInInspector]
+    public UnityEvent<Marble> OnMarblePreRemove = new UnityEvent<Marble>();
+    
+    [HideInInspector]
+    public UnityEvent<MarbleData> OnMarbleDataAdded = new UnityEvent<MarbleData>();
+    [HideInInspector]
+    public UnityEvent<MarbleData> OnMarbleDataPreRemove = new UnityEvent<MarbleData>();
+    
     private void Awake()
     {
         Assert.IsNotNull(spawnPointManager);
@@ -40,14 +54,20 @@ public class MarbleManager : MonoBehaviour
             {
                 marble.gameObject.SetActive(true);
                 marbles.Add(marble);
+                OnMarbleAdded.Invoke(marble);
             },
             actionOnRelease: marble =>
             {
+                OnMarblePreRemove.Invoke(marble);
                 marble.gameObject.SetActive(false);
                 marbles.Remove(marble);
             },
             actionOnDestroy: marble =>
             {
+                if (marble.isActiveAndEnabled)
+                {
+                    OnMarblePreRemove.Invoke(marble);
+                }
                 marbles.Remove(marble);
                 Destroy(marble.gameObject);
             },
@@ -67,6 +87,7 @@ public class MarbleManager : MonoBehaviour
             MarbleData marbleData = new MarbleData(marbles.Count, marbleName, GetRandomColor(),
                 new DonationData(isAnonymous, donor, donationAmount, msg));
             marblesData.Add(marbleData);
+            OnMarbleDataAdded.Invoke(marbleData);
             AddMarble(marbleData);    
         }
     }
@@ -78,6 +99,13 @@ public class MarbleManager : MonoBehaviour
         return marble;
     }
 
+    public void AddAllMarblesByMarbleData()
+    {
+        foreach (MarbleData marbleData in marblesData)
+        {
+            AddMarble(marbleData);
+        }
+    }
     public void ForceRemoveMarble(Marble marble)
     {
         marbles.Remove(marble);
@@ -132,6 +160,24 @@ public class MarbleManager : MonoBehaviour
         for (int i = 0; i < marbles.Count; ++i)
         {
             marbles[i].transform.position = spawnPointManager.GetSpawnLocalPosition(i);
+        }
+    }
+
+    public void RandomMarblePosition()
+    {
+        int[] allIndex = Enumerable.Range(0, marbles.Count).ToArray();
+        
+        for (int i = 0; i < marbles.Count; ++i)
+        {
+            int randomIndex = Random.Range(i, allIndex.Length);
+            int temp = allIndex[i];
+            allIndex[i] = allIndex[randomIndex];
+            allIndex[randomIndex] = temp;
+        }
+        
+        for (int i = 0; i < marbles.Count; ++i)
+        {
+            marbles[allIndex[i]].transform.position = spawnPointManager.GetSpawnLocalPosition(i);
         }
     }
     public void SetAllMarbleSimulate(bool isSimulated)
