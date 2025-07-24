@@ -54,7 +54,6 @@ public class MarbleManager : MonoBehaviour
             {
                 marble.gameObject.SetActive(true);
                 marbles.Add(marble);
-                OnMarbleAdded.Invoke(marble);
             },
             actionOnRelease: marble =>
             {
@@ -96,6 +95,7 @@ public class MarbleManager : MonoBehaviour
         Marble marble = marblePool.Get();
         marble.transform.SetLocalPositionAndRotation(spawnPointManager.GetSpawnLocalPosition(marbleData.MarbleID), Quaternion.identity);
         marble.Initialize(this, marbleData);
+        OnMarbleAdded.Invoke(marble);
         return marble;
     }
 
@@ -108,6 +108,10 @@ public class MarbleManager : MonoBehaviour
     }
     public void ForceRemoveMarble(Marble marble)
     {
+        if (marble == null)
+        {
+            return;
+        }
         marbles.Remove(marble);
         marblePool.Release(marble);
     }

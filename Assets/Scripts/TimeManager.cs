@@ -1,18 +1,23 @@
+using System;
 using UnityEngine;
 
 public class TimeManager : MonoBehaviour
 {
     private float defaultFixedDeltaTime;
-    private const float slowMotionFactor = .5f;
+    [SerializeField]
+    private float defaultSlowMotionFactor = .5f;
 
-    private void Awake()
+    private void Start()
     {
-        Debug.Log("Awake : " + defaultFixedDeltaTime);
         defaultFixedDeltaTime = Time.fixedDeltaTime;
     }
 
-    public void SetSlow(float slowTimeFactor = slowMotionFactor)
+    public void SetSlow(float slowTimeFactor = -1)
     {
+        if (slowTimeFactor == -1)
+        {
+            slowTimeFactor = defaultSlowMotionFactor;
+        }
         Time.timeScale = slowTimeFactor;
         Time.fixedDeltaTime = defaultFixedDeltaTime * Time.timeScale;
     }

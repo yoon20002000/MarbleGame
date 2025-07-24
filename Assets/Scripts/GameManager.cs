@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
     
     [SerializeField]
     private MarbleManager marbleManager;
+
+    public MarbleManager MarbleManager => marbleManager;
     
     [SerializeField]
     private DonationManager donationManager;
@@ -170,13 +172,14 @@ public class GameManager : MonoBehaviour
         {
             GameState = EGameState.RacingEnd;
             
-            OnGameEnded?.Invoke(marble);
+            Marble winner = marbleManager.Marbles[0];
+            OnGameEnded?.Invoke(winner);
             marbleManager.AddAllMarblesByMarbleData();
             // Race End
             // 승자 연출
             // 승자 Popup 닫았을 때 호출 할 수 있도록 OnClick Close 에 바인드 할 것
             
-            Debug.Log("Winner : " + marble.MarbleData.MarbleName);
+            Debug.Log("Winner : " + winner.MarbleData.MarbleName);
         }
     }
 
@@ -252,7 +255,9 @@ public class GameManager : MonoBehaviour
 
     public void StartAggregation(string channelID)
     {
+#pragma warning disable CS4014 // 이 호출을 대기하지 않으므로 호출이 완료되기 전에 현재 메서드가 계속 실행됩니다.
         chzzkUnity.Connect(channelID);
+#pragma warning restore CS4014 // 이 호출을 대기하지 않으므로 호출이 완료되기 전에 현재 메서드가 계속 실행됩니다.
     }
 
     public void StopAggregation()
