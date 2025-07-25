@@ -1,12 +1,13 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UI_ChzzSetting : MonoBehaviour
 {
-    [Header("Game Manager")]
-    [SerializeField]
-    private GameManager gameManager;
+    // [Header("Game Manager")]
+    // [SerializeField]
+    // private GameManager gameManager;
     
     [Header("UI")]
     [Header("ChannelID")]
@@ -23,12 +24,17 @@ public class UI_ChzzSetting : MonoBehaviour
 
     private void Awake()
     {
-        gameManager.OnGameStateChanged.AddListener(OnGameStateChanged);
+        MarbleGameManager.Instance.OnGameStateChanged.AddListener(OnGameStateChanged);
         dataAggregationToggle.onValueChanged.AddListener(OnDataAggregationToggleValueChanged);
-        OnGameStateChanged(gameManager.GameState);
+        OnGameStateChanged(MarbleGameManager.Instance.GameState);
     }
 
-    private void OnGameStateChanged(GameManager.EGameState eState)
+    private void OnDestroy()
+    {
+        MarbleGameManager.Instance.OnGameStateChanged.RemoveListener(OnGameStateChanged);
+    }
+
+    private void OnGameStateChanged(MarbleGameManager.EGameState eState)
     {
         SetGameStateText(eState);
         SetToggleText(eState);
@@ -38,7 +44,7 @@ public class UI_ChzzSetting : MonoBehaviour
     {
         if (isOn)
         {
-            gameManager.StopAggregation();
+            MarbleGameManager.Instance.StopAggregation();
         }
         else
         {
@@ -46,24 +52,24 @@ public class UI_ChzzSetting : MonoBehaviour
             {
                 return;
             }
-            gameManager.StartAggregation(channelIDInputField.text);
+            MarbleGameManager.Instance.StartAggregation(channelIDInputField.text);
         }
     }
 
-    private void SetGameStateText(GameManager.EGameState eState)
+    private void SetGameStateText(MarbleGameManager.EGameState eState)
     {
         string gameState;
         switch (eState)
         {
-            case GameManager.EGameState.Idle:
-            case GameManager.EGameState.Racing:
-            case GameManager.EGameState.RacingEnd:
+            case MarbleGameManager.EGameState.Idle:
+            case MarbleGameManager.EGameState.Racing:
+            case MarbleGameManager.EGameState.RacingEnd:
             default:
             {
                 gameState = "집계 중단 됨";
                 break;
             }
-            case GameManager.EGameState.Aggregation:
+            case MarbleGameManager.EGameState.Aggregation:
             {
                 gameState = "집계 중";
                 break;
@@ -72,24 +78,24 @@ public class UI_ChzzSetting : MonoBehaviour
         gameStateText.SetText(gameState);
     }
 
-    private void SetToggleText(GameManager.EGameState eState)
+    private void SetToggleText(MarbleGameManager.EGameState eState)
     {
         string toggleText;
         switch (eState)
         {
-            case GameManager.EGameState.Idle:
+            case MarbleGameManager.EGameState.Idle:
             {
                 toggleText = "집계 시작";
                 break;
             }
-            case GameManager.EGameState.Racing:
-            case GameManager.EGameState.RacingEnd:
+            case MarbleGameManager.EGameState.Racing:
+            case MarbleGameManager.EGameState.RacingEnd:
             default:
             {
                 toggleText = "-";
                 break;
             }
-            case GameManager.EGameState.Aggregation:
+            case MarbleGameManager.EGameState.Aggregation:
             {
                 toggleText = "집계 중단";
                 break;

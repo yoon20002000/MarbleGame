@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 public class UI_MainLayout : MonoBehaviour
 {
-    [SerializeField]
-    private GameManager gameManager;
+    // [SerializeField]
+    // private GameManager gameManager;
 
     [Header("UI")] 
     [Header("RaceState Change Button")]
@@ -18,36 +18,42 @@ public class UI_MainLayout : MonoBehaviour
     
     private void Awake()
     {
-        Assert.IsNotNull(gameManager, "Game manager is null.");
+        //Assert.IsNotNull(gameManager, "Game manager is null.");
         
-        gameManager.OnGameStateChanged.AddListener(OnGameStateChanged);
+        //gameManager.OnGameStateChanged.AddListener(OnGameStateChanged);
+        MarbleGameManager.Instance.OnGameStateChanged.AddListener(OnGameStateChanged);
         raceStateChangeButton.onValueChanged.AddListener(OnRacingStateValueChanged);
-        OnGameStateChanged(gameManager.GameState);
+        OnGameStateChanged(MarbleGameManager.Instance.GameState);
+    }
+
+    private void OnDestroy()
+    {
+        MarbleGameManager.Instance.OnGameStateChanged.RemoveListener(OnGameStateChanged);
     }
 
     private void OnRacingStateValueChanged(bool isOn)
     {
         if (isOn == true)
         {
-            gameManager.StartRace();    
+            MarbleGameManager.Instance.StartRace();    
         }
         else
         {
-            gameManager.StopRace();    
+            MarbleGameManager.Instance.ForceStopRace();    
         }
     }
     
-    private void OnGameStateChanged(GameManager.EGameState eGameState)
+    private void OnGameStateChanged(MarbleGameManager.EGameState eGameState)
     {
         SetRaceButtonText(eGameState);
         SetRaceButton(eGameState);
     }
 
-    private void SetRaceButtonText(GameManager.EGameState eGameState)
+    private void SetRaceButtonText(MarbleGameManager.EGameState eGameState)
     {
         string raceButtonText ;
 
-        if (gameManager.IsRacingStartAble)
+        if (MarbleGameManager.Instance.IsRacingStartAble)
         {
             raceButtonText = "레이스 시작!";
         }
@@ -55,14 +61,14 @@ public class UI_MainLayout : MonoBehaviour
         {
             switch (eGameState)
             {
-                case GameManager.EGameState.Idle:
-                case GameManager.EGameState.Aggregation:
+                case MarbleGameManager.EGameState.Idle:
+                case MarbleGameManager.EGameState.Aggregation:
                 {
                     raceButtonText = "레이스\n준비 중...";
                     break;
                 }
-                case GameManager.EGameState.Racing:
-                case GameManager.EGameState.RacingEnd:
+                case MarbleGameManager.EGameState.Racing:
+                case MarbleGameManager.EGameState.RacingEnd:
                 default:
                 {
                     raceButtonText = "";
@@ -73,12 +79,12 @@ public class UI_MainLayout : MonoBehaviour
 
         toggleDescription.SetText(raceButtonText);
     }
-    private void SetRaceButton(GameManager.EGameState eGameState)
+    private void SetRaceButton(MarbleGameManager.EGameState eGameState)
     {
-        bool isToggleActive = eGameState is GameManager.EGameState.Idle or GameManager.EGameState.Aggregation;
+        bool isToggleActive = eGameState is MarbleGameManager.EGameState.Idle or MarbleGameManager.EGameState.Aggregation;
         raceStateChangeButton.gameObject.SetActive(isToggleActive);
         
-        bool isInteractable = gameManager.IsRacingStartAble;
+        bool isInteractable = MarbleGameManager.Instance.IsRacingStartAble;
         raceStateChangeButton.interactable = isInteractable;
     }
 }

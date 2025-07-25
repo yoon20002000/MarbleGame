@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -6,8 +7,8 @@ using UnityEngine.UI;
 
 public class UI_MarbleDataInput : MonoBehaviour
 {
-   [SerializeField]
-   private GameManager gameManager;
+   // [SerializeField]
+   // private GameManager gameManager;
 
    [Header("UI")]
    [Header("InputField")]
@@ -25,33 +26,29 @@ public class UI_MarbleDataInput : MonoBehaviour
    private Button resetMarbleButton;
    private void Awake()
    {
-      if (!gameManager)
-      {
-         gameManager = FindFirstObjectByType<GameManager>();
-         Assert.IsNotNull(gameManager);
-         if (!gameManager)
-         {
-            gameManager.AddComponent<GameManager>();
-         }
-      }
-      
-      gameManager.OnGameStateChanged.AddListener(OnRacingStateChanged);
+     
+      MarbleGameManager.Instance.OnGameStateChanged.AddListener(OnRacingStateChanged);
       
       addMarbleButton.onClick.AddListener(OnClickAddMarbleButton);
       removeMarbleButton.onClick.AddListener(OnClickRemoveMarbleButton);
       resetMarbleButton.onClick.AddListener(OnClickResetMarbleButton);
    }
 
+   private void OnDestroy()
+   {
+      MarbleGameManager.Instance.OnGameStateChanged.RemoveListener(OnRacingStateChanged);
+   }
+
    private void OnClickAddMarbleButton()
    {
       int marbleCount = int.Parse(marbleCountInputField.text);
-      gameManager.AddMarble(marbleNameInputField.text, marbleCount);
+      MarbleGameManager.Instance.AddMarble(marbleNameInputField.text, marbleCount);
    }
 
    private void OnClickRemoveMarbleButton()
    {
       int marbleCount = int.Parse(marbleCountInputField.text);
-      gameManager.RemoveMarble(marbleNameInputField.text, marbleCount);
+      MarbleGameManager.Instance.RemoveMarble(marbleNameInputField.text, marbleCount);
    }
 
    private void OnClickResetMarbleButton()
@@ -59,10 +56,10 @@ public class UI_MarbleDataInput : MonoBehaviour
       
    }
 
-   private void OnRacingStateChanged(GameManager.EGameState gameState)
+   private void OnRacingStateChanged(MarbleGameManager.EGameState gameState)
    {
       bool isUIInteractable =
-         gameState != GameManager.EGameState.Racing && gameState != GameManager.EGameState.RacingEnd;
+         gameState != MarbleGameManager.EGameState.Racing && gameState != MarbleGameManager.EGameState.RacingEnd;
       addMarbleButton.interactable = isUIInteractable;
       removeMarbleButton.interactable = isUIInteractable;
       resetMarbleButton.interactable = isUIInteractable;

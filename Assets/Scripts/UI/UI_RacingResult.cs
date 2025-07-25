@@ -5,9 +5,9 @@ using UnityEngine.UI;
 
 public class UI_RacingResult : MonoBehaviour
 {
-    [Header("Game Manager")]
-    [SerializeField]
-    private GameManager gameManager;
+    // [Header("Game Manager")]
+    // [SerializeField]
+    // private GameManager gameManager;
     [Header("UI")]
     [SerializeField]
     private TextMeshProUGUI winnerNameText;
@@ -20,11 +20,13 @@ public class UI_RacingResult : MonoBehaviour
     private const string ANONYMOUS_NAME = "익명";
     private void Awake()
     {
-        Assert.IsNotNull(gameManager, "Game manager is null.");
-        
-        gameManager.OnGameStateChanged.AddListener(OnGameStateChanged);
-        gameManager.OnGameEnded.AddListener(OnGameEnded);
-        OnGameStateChanged(gameManager.GameState);
+        // Assert.IsNotNull(gameManager, "Game manager is null.");
+        //
+        // gameManager.OnGameStateChanged.AddListener(OnGameStateChanged);
+        // gameManager.OnGameEnded.AddListener(OnGameEnded);
+        MarbleGameManager.Instance.OnGameStateChanged.AddListener(OnGameStateChanged);
+        MarbleGameManager.Instance.OnGameEnd.AddListener(OnGameEnded);
+        OnGameStateChanged(MarbleGameManager.Instance.GameState);
         
         closeButton.onClick.AddListener(OnClickCloseButton);
     }
@@ -34,19 +36,19 @@ public class UI_RacingResult : MonoBehaviour
         SetActiveUI(false);
     }
 
-    private void OnGameStateChanged(GameManager.EGameState eGameState)
+    private void OnGameStateChanged(MarbleGameManager.EGameState eGameState)
     {
         switch (eGameState)
         {
-            case GameManager.EGameState.Idle:
-            case GameManager.EGameState.Aggregation:
-            case GameManager.EGameState.Racing:
+            case MarbleGameManager.EGameState.Idle:
+            case MarbleGameManager.EGameState.Aggregation:
+            case MarbleGameManager.EGameState.Racing:
             default:
             {
                 SetActiveUI(false);
                 break;
             }
-            case GameManager.EGameState.RacingEnd:
+            case MarbleGameManager.EGameState.RacingEnd:
             {
                 
                 break;

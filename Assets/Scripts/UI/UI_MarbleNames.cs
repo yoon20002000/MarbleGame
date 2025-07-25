@@ -1,11 +1,12 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
 public class UI_MarbleNames : MonoBehaviour
 {
-    [SerializeField]
-    private GameManager gameManager;
+    // [SerializeField]
+    // private GameManager gameManager;
     [SerializeField] private RectTransform marbleNameContent;
 
     [SerializeField] private Transform marbleNamePrefab;
@@ -23,25 +24,31 @@ public class UI_MarbleNames : MonoBehaviour
             actionOnGet: marbleName =>
             {
                 activedMarbleNames.Add(marbleName);
-                marbleName.gameObject.SetActive(true);
+                marbleName.gameObject?.SetActive(true);
             },
             actionOnRelease: marbleName =>
             {
                 activedMarbleNames.Remove(marbleName);
-                marbleName.gameObject.SetActive(false);
+                marbleName?.gameObject?.SetActive(false);
             },
             actionOnDestroy: marbleName =>
             {
-                activedMarbleNames.Remove(marbleName);
-                Destroy(marbleName.gameObject);
+                activedMarbleNames?.Remove(marbleName);
+                Destroy(marbleName?.gameObject);
             },
             collectionCheck: false,
             defaultCapacity: 500);
-        
-        gameManager.MarbleManager.OnMarbleAdded.AddListener(AddMarbleNameUI);
-        gameManager.MarbleManager.OnMarblePreRemove.AddListener(RemoveMarbleNameUI);
+
+        MarbleGameManager.Instance.OnMarbleAdd.AddListener(AddMarbleNameUI);
+        MarbleGameManager.Instance.OnMarblePreRemove.AddListener(RemoveMarbleNameUI);
     }
-    
+
+    private void OnDestroy()
+    {
+        MarbleGameManager.Instance.OnMarbleAdd.RemoveListener(AddMarbleNameUI);
+        MarbleGameManager.Instance.OnMarblePreRemove.RemoveListener(RemoveMarbleNameUI);
+    }
+
     private void AddMarbleNameUI(Marble marble)
     {
         UI_MarbleName marbleNameUI = marbleNamePool.Get();
