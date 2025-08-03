@@ -18,9 +18,6 @@ public class UI_MainLayout : MonoBehaviour
     
     private void Awake()
     {
-        //Assert.IsNotNull(gameManager, "Game manager is null.");
-        
-        //gameManager.OnGameStateChanged.AddListener(OnGameStateChanged);
         MarbleGameManager.Instance.OnGameStateChanged.AddListener(OnGameStateChanged);
         raceStateChangeButton.onValueChanged.AddListener(OnRacingStateValueChanged);
         OnGameStateChanged(MarbleGameManager.Instance.GameState);

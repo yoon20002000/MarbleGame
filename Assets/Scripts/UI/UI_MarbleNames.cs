@@ -5,8 +5,6 @@ using UnityEngine.Pool;
 
 public class UI_MarbleNames : MonoBehaviour
 {
-    // [SerializeField]
-    // private GameManager gameManager;
     [SerializeField] private RectTransform marbleNameContent;
 
     [SerializeField] private Transform marbleNamePrefab;

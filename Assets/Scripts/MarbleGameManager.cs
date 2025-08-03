@@ -16,7 +16,8 @@ public class MarbleGameManager : MonoBehaviour
     public UnityEvent<List<Marble>> OnGameStart = new UnityEvent<List<Marble>>();
     public UnityEvent<Marble> OnGameEnd = new UnityEvent<Marble>();
     public UnityEvent OnGameForceEnd = new UnityEvent();
-
+    public UnityEvent<int, Marble> OnMarblePassEndPoint = new UnityEvent<int, Marble>();
+    
     public UnityEvent OnAggregationStart = new UnityEvent();
     public UnityEvent OnAggregationEnd = new UnityEvent();
     
@@ -136,7 +137,9 @@ public class MarbleGameManager : MonoBehaviour
         
         marbleManager.RemoveMarble(marble);
         InRacingMarbles.Remove(marble);
-            
+        
+        OnMarblePassEndPoint?.Invoke( marbleManager.MarbleDataCount - InRacingMarbles.Count,marble);
+        
         if (InRacingMarbles.Count == 1)
         {
             
