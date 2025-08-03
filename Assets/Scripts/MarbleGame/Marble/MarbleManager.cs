@@ -147,11 +147,11 @@ public class MarbleManager : MonoBehaviour
     public void RemoveAllMarbles()
     {
         StopAllMarbleManagerCoroutines();
-        marbles.Clear();
         for (int i = marbles.Count - 1; i >= 0; --i)
         {
             marblePool.Release(marbles[i]);
         }
+        marbles.Clear();
     }
 
     public void RemoveAllMarblesData()

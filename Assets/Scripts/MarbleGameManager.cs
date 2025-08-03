@@ -289,5 +289,10 @@ public class MarbleGameManager : MonoBehaviour
         }
         marbleManager.RemoveMarble(marble);
     }
+
+    public void RemoveAllMarbleData()
+    {
+        marbleManager.ResetMarbleManagerState();
+    }
     #endregion
 }

@@ -7,9 +7,6 @@ using UnityEngine.UI;
 
 public class UI_MarbleDataInput : MonoBehaviour
 {
-   // [SerializeField]
-   // private GameManager gameManager;
-
    [Header("UI")]
    [Header("InputField")]
    [SerializeField]
@@ -53,7 +50,7 @@ public class UI_MarbleDataInput : MonoBehaviour
 
    private void OnClickResetMarbleButton()
    {
-      
+      MarbleGameManager.Instance.RemoveAllMarbleData();
    }
 
    private void OnRacingStateChanged(MarbleGameManager.EGameState gameState)
