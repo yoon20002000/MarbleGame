@@ -57,7 +57,7 @@ public class UI_PassMarbles : MonoBehaviour
     {
         UI_PassMarble passMarbleUI = passMarblePool.Get();
         passMarbleUI.gameObject.SetActive(false);
-        passMarbleUI.UpdateUI(marbleRank, passMarble.MarbleData.MarbleName);
+        passMarbleUI.UpdateUI(marbleRank, passMarble.MarbleData.MarbleName, passMarble.MarbleData.MarbleColor);
         passMarbleUI.gameObject.SetActive(true);
     }
 }

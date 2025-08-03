@@ -8,9 +8,10 @@ public class UI_PassMarble : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI marbleNameText;
 
-    public void UpdateUI(int marbleRank, string marbleName)
+    public void UpdateUI(int marbleRank, string marbleName, Color marbleColor)
     {
         marbleRankText.SetText(marbleRank.ToString());
         marbleNameText.SetText(marbleName);
+        marbleNameText.color = marbleColor;
     }
 }
